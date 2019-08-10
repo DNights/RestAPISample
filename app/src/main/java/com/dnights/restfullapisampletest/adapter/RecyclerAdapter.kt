@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dnights.restfullapisampletest.api.data.PhotoData
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
 import com.dnights.restfullapisampletest.R
 import com.bumptech.glide.Glide
 
@@ -29,10 +28,11 @@ class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ItemViewHolder>() {
     }
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private var imageview : ImageView = itemView.findViewById(R.id.imageView_thumb)
-
         fun onBind(data: PhotoData){
-            Glide.with(imageview).load(data.urls.thumb).into(imageview)
+            Glide
+                .with(itemView)
+                .load(data.urls.thumb)
+                .into(itemView.findViewById(R.id.imageView_thumb))
         }
     }
 }
