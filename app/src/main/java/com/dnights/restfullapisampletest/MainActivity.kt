@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dnights.restfullapisampletest.api.AccessKey
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,8 +47,12 @@ class MainActivity : AppCompatActivity() {
             return@Interceptor it.proceed(request)
         }
 
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY
+
         val builder = OkHttpClient.Builder()
         builder.interceptors().add(interceptor)
+        builder.interceptors().add(logging)
         retofit.client(builder.build())
 
         retofit.build().create(API::class.java)
