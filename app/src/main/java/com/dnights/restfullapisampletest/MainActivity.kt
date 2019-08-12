@@ -14,6 +14,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dnights.restfullapisampletest.api.AccessKey
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,9 +40,17 @@ class MainActivity : AppCompatActivity() {
         val retofit = Retrofit.Builder()
             .baseUrl(Urls.getBaseUrl())
             .addConverterFactory(GsonConverterFactory.create())
-            .build()
 
-        retofit.create(API::class.java)
+        val interceptor = Interceptor{
+            val request = it.request().newBuilder().addHeader("Accept-Version","v1").build()
+            return@Interceptor it.proceed(request)
+        }
+
+        val builder = OkHttpClient.Builder()
+        builder.interceptors().add(interceptor)
+        retofit.client(builder.build())
+
+        retofit.build().create(API::class.java)
             .fetchPotos(AccessKey.accessKey)
             .enqueue(object: Callback<List<PhotoData>> {
                 override fun onResponse(call: Call<List<PhotoData>>, response: Response<List<PhotoData>>) {
