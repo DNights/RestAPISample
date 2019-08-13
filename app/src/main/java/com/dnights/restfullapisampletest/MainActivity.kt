@@ -5,76 +5,41 @@ import android.os.Bundle
 import com.dnights.restfullapisampletest.adapter.RecyclerAdapter
 import com.dnights.restfullapisampletest.api.API
 import com.dnights.restfullapisampletest.api.Urls
-import com.dnights.restfullapisampletest.api.data.PhotoData
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dnights.restfullapisampletest.api.AccessKey
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import com.dnights.restfullapisampletest.api.RetrofitAdapter
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
-
-    var adapter = RecyclerAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         initLayout()
-
-        getPhotos()
+        callAPIFetchPhotos()
     }
 
     private fun initLayout(){
         val linearLayoutManager = LinearLayoutManager(this)
         recycler_image_list.layoutManager = linearLayoutManager
-        recycler_image_list.adapter = adapter
+        recycler_image_list.adapter = RecyclerAdapter()
     }
 
-    private fun getPhotos(){
-        val retofit = Retrofit.Builder()
-            .baseUrl(Urls.getBaseUrl())
-            .addConverterFactory(GsonConverterFactory.create())
-
-        val interceptor = Interceptor{
-            val request = it.request().newBuilder().addHeader("Accept-Version","v1").build()
-            return@Interceptor it.proceed(request)
-        }
-
-        val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.BODY
-
-        val builder = OkHttpClient.Builder()
-        builder.interceptors().add(interceptor)
-        builder.interceptors().add(logging)
-        retofit.client(builder.build())
-
-        retofit.build().create(API::class.java)
-            .fetchPotos(AccessKey.accessKey)
-            .enqueue(object: Callback<List<PhotoData>> {
-                override fun onResponse(call: Call<List<PhotoData>>, response: Response<List<PhotoData>>) {
-                    if(response.isSuccessful){
-
-                        val body = response.body()
-
-                        requireNotNull(body) { "body is null" }
-
-                        adapter.setList(body)
-                        adapter.notifyDataSetChanged()
-
-                    }
-                }
-
-                override fun onFailure(call: Call<List<PhotoData>>, t: Throwable) {
-                    t.printStackTrace()
-                }
-
+    private fun callAPIFetchPhotos(){
+        RetrofitAdapter.getInstance(Urls.getBaseUrl())
+            .create(API::class.java)
+            .fetchPhotos(AccessKey.accessKey)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                (recycler_image_list.adapter as RecyclerAdapter).setList(it)
+                recycler_image_list.adapter!!.notifyDataSetChanged()
+            },{
+                it.printStackTrace()
             })
     }
+
+
 }
