@@ -1,18 +1,18 @@
-package com.dnights.restfullapisampletest
+package com.dnights.restfullapisampletest.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.dnights.restfullapisampletest.adapter.RecyclerAdapter
 import com.dnights.restfullapisampletest.api.API
 import com.dnights.restfullapisampletest.api.Urls
 import kotlinx.android.synthetic.main.activity_main.*
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.dnights.restfullapisampletest.R
 import com.dnights.restfullapisampletest.api.AccessKey
 import com.dnights.restfullapisampletest.api.RetrofitAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +38,9 @@ class MainActivity : AppCompatActivity() {
                 recycler_image_list.adapter!!.notifyDataSetChanged()
             },{
                 it.printStackTrace()
-            })
+            }).let {
+                addDisposable(it)
+            }
     }
 
 
