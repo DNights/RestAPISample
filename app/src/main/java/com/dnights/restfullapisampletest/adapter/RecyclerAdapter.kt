@@ -7,27 +7,68 @@ import android.view.LayoutInflater
 import android.view.View
 import com.dnights.restfullapisampletest.R
 import com.bumptech.glide.Glide
+import java.lang.Exception
+import kotlin.collections.ArrayList
 
-class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ItemViewHolder>() {
+
+class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>() {
+
+    private val TYPE_HEADER = 0
+    private val TYPE_ITEM = 1
+    private val TYPE_FOOTER = 2
 
     private var itemsList = ArrayList<PhotoData>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_imageview, parent, false)
-        return ItemViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+
+        return when(viewType){
+            TYPE_HEADER ->{
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_header, parent, false)
+                HeaderViewHolder(view)
+            }
+
+            TYPE_FOOTER-> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_footer, parent, false)
+                FooterViewHolder(view)
+            }
+
+            TYPE_ITEM->{
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_imageview, parent, false)
+                ItemViewHolder(view)
+            }
+
+            else -> throw Exception("Unknow viewType $viewType")
+        }
+
     }
 
-    override fun getItemCount() = itemsList.size
+    override fun getItemCount() = itemsList.size +2
 
-    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.onBind(itemsList[position])
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+        if(holder is ItemViewHolder){
+            holder.onBind(itemsList[position-1])
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return when(position) {
+            0 -> TYPE_HEADER
+            (itemsList.size + 1) -> TYPE_FOOTER
+            else -> TYPE_ITEM
+        }
     }
 
     fun setList(list: List<PhotoData>){
         itemsList = list as ArrayList<PhotoData>
     }
 
-    class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    class HeaderViewHolder(itemView: View) : BaseViewHolder(itemView)
+
+    class FooterViewHolder(itemView: View) : BaseViewHolder(itemView)
+
+    class ItemViewHolder(itemView: View) : BaseViewHolder(itemView) {
         fun onBind(data: PhotoData){
             Glide
                 .with(itemView)
