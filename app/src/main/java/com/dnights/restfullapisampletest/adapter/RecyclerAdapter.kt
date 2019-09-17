@@ -22,9 +22,8 @@ class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>() {
 
     private var itemsList = ArrayList<PhotoData>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-
-        return when(viewType){
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder =
+        when(viewType){
             TYPE_HEADER ->{
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.item_header, parent, false)
                 HeaderViewHolder(view)
@@ -42,9 +41,7 @@ class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>() {
 
             else -> throw Exception("Unknow viewType $viewType")
         }
-
-    }
-
+    
     override fun getItemCount() = itemsList.size + HEADER_SIZE + FOOTER_SIZE
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
@@ -53,13 +50,12 @@ class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>() {
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return when(position) {
+    override fun getItemViewType(position: Int): Int =
+        when(position) {
             0 -> TYPE_HEADER
             (itemsList.size + HEADER_SIZE) -> TYPE_FOOTER
             else -> TYPE_ITEM
         }
-    }
 
     fun setList(list: List<PhotoData>){
         itemsList = list as ArrayList<PhotoData>
