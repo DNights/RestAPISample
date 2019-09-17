@@ -17,6 +17,9 @@ class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>() {
     private val TYPE_ITEM = 1
     private val TYPE_FOOTER = 2
 
+    private val HEADER_SIZE = 1
+    private val FOOTER_SIZE = 1
+
     private var itemsList = ArrayList<PhotoData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -42,18 +45,18 @@ class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.BaseViewHolder>() {
 
     }
 
-    override fun getItemCount() = itemsList.size +2
+    override fun getItemCount() = itemsList.size + HEADER_SIZE + FOOTER_SIZE
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         if(holder is ItemViewHolder){
-            holder.onBind(itemsList[position-1])
+            holder.onBind(itemsList[position - HEADER_SIZE])
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         return when(position) {
             0 -> TYPE_HEADER
-            (itemsList.size + 1) -> TYPE_FOOTER
+            (itemsList.size + HEADER_SIZE) -> TYPE_FOOTER
             else -> TYPE_ITEM
         }
     }
