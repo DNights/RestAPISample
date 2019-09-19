@@ -15,7 +15,6 @@ import com.dnights.restfullapisampletest.paging.PhotoPageAdepter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-
 class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,10 +28,10 @@ class MainActivity : BaseActivity() {
         recycler_image_list.layoutManager = linearLayoutManager
 
         val config = PagedList.Config.Builder()
-            .setInitialLoadSizeHint(10)
-            .setPageSize(10)
-            .setPrefetchDistance(10)
-            .setEnablePlaceholders(true)
+            .setInitialLoadSizeHint(10) //Defines how many items to load when first load occurs.
+            .setPageSize(10)    //Defines the number of items loaded at once from the DataSource.
+            .setPrefetchDistance(5)    //Defines how far from the edge of loaded content an access must be to trigger further loading.
+            .setEnablePlaceholders(true)    //Pass false to disable null placeholders in PagedLists using this Config.
             .build()
 
         val builder = RxPagedListBuilder<Int, PhotoData>(object: DataSource.Factory<Int, PhotoData>() {
