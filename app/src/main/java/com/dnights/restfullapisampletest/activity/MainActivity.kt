@@ -23,7 +23,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initLayout()
-        callAPIFetchPhotos()
+        //callAPIFetchPhotos()
     }
 
     private fun initLayout(){
@@ -51,6 +51,36 @@ class MainActivity : BaseActivity() {
                 Log.d("test", "lastLink = $lastLink")
                 Log.d("test", "nextLink = $nextLink")
 
+//    private fun callAPIFetchPhotos(){
+//        RetrofitAdapter.getInstance(Urls.getBaseUrl())
+//            .create(API::class.java)
+//            .fetchPhotos(AccessKey.accessKey)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//
+//                val links = it.headers().get("link")?:""
+//
+//                require(links.isNotEmpty()){ "Header lisk is empty" }
+//
+//                val lastLink = links.split(",")[0].replace("<","").replace(">; rel=\"last\"", "")
+//                val nextLink = links.split(",")[1].replace(" <","").replace(">; rel=\"next\"","")
+//
+//                Log.d("test", "links = $links")
+//                Log.d("test", "lastLink = $lastLink")
+//                Log.d("test", "nextLink = $nextLink")
+//
+//
+//                Log.d("test", "response = ${it.body()}")
+//
+//                (recycler_image_list.adapter as RecyclerAdapter).setList(it.body()?: emptyList())
+//                recycler_image_list.adapter!!.notifyDataSetChanged()
+//            },{
+//                it.printStackTrace()
+//            }).let {
+//                addDisposable(it)
+//            }
+//    }
 
                 Log.d("test", "response = ${it.body()}")
 
