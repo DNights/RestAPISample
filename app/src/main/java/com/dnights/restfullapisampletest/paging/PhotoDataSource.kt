@@ -7,10 +7,9 @@ import com.dnights.restfullapisampletest.api.data.PhotoData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import retrofit2.Response
 
 class PhotoDataSource(private val api:API, private val compositeDisposable: CompositeDisposable) : PageKeyedDataSource<Int, PhotoData>(){
-
-    var nextPage = -1
 
     override fun loadInitial(
         params: LoadInitialParams<Int>,
@@ -20,43 +19,55 @@ class PhotoDataSource(private val api:API, private val compositeDisposable: Comp
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                val links = it.headers().get("link")?:""
-
-                require(links.isNotEmpty()) { "lisks is empty" }
-
-                nextPage = links.split(",")[1]
-                    .replace(" <","")
-                    .replace(">; rel=\"next\"","")
-                    .split("page=")[1]
-                    .toInt()
-
+                val nextPage = getNextPage(it)
                 val body = it.body()?: emptyList()
-                callback.onResult(body, 1, nextPage)
+                callback.onResult(body, 0, nextPage)
             },{
+                //TODO "exception loadInitial"
                 it.printStackTrace()
             }).let { compositeDisposable.add(it) }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, PhotoData>) {
-        api.fetchPhotos(AccessKey.accessKey, nextPage)
+
+        api.fetchPhotos(AccessKey.accessKey, params.key)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                val links = it.headers().get("link")?:""
-
-                require(links.isNotEmpty()) { "lisks is empty" }
-
-                nextPage = links
-                    .split(",")[3]
-                    .replace(" <","")
-                    .replace(">; rel=\"next\"","")
-                    .split("page=")[1]
-                    .toInt()
-
-                callback.onResult(it.body()?: emptyList(),  nextPage)
+                val nextPage = getNextPage(it)
+                val body = it.body()?: emptyList()
+                callback.onResult(body, nextPage)
             },{
+                //TODO "exception loadAfter"
                 it.printStackTrace()
             }).let { compositeDisposable.add(it) }
+    }
+
+    /**
+     * links structure first
+     * <https://api.unsplash.com/photos?client_id=XXX&page=13340>; rel="last",
+     * <https://api.unsplash.com/photos?client_id=XXX&page=2>; rel="next"
+     *
+     * links structure next
+     * <https://api.unsplash.com/photos?client_id=XXX&page=1>; rel="first",
+     * <https://api.unsplash.com/photos?client_id=XXX&page=27>; rel="prev",
+     * <https://api.unsplash.com/photos?client_id=XXX&page=13340>; rel="last",
+     * <https://api.unsplash.com/photos?client_id=XXX&page=29>; rel="next"
+     */
+
+    private fun getLinkFromHeader(it: Response<List<PhotoData>>): String {
+        val links = it.headers().get("link") ?: ""
+        require(links.isNotEmpty()) { "lisks is empty" }
+        return links
+    }
+
+    private fun getNextPage(it: Response<List<PhotoData>>): Int {
+        val links = getLinkFromHeader(it).split(",")
+        return links[links.lastIndex]
+            .replace(" <", "")
+            .replace(">; rel=\"next\"", "")
+            .split("page=")[1]
+            .toInt()
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, PhotoData>) {
