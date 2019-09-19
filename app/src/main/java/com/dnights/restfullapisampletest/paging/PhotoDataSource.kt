@@ -1,6 +1,5 @@
 package com.dnights.restfullapisampletest.paging
 
-import android.util.Log
 import androidx.paging.PageKeyedDataSource
 import com.dnights.restfullapisampletest.api.API
 import com.dnights.restfullapisampletest.api.AccessKey
@@ -22,13 +21,16 @@ class PhotoDataSource(private val api:API, private val compositeDisposable: Comp
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 val links = it.headers().get("link")?:""
-                val nextLink = links.split(",")[1].replace(" <","").replace(">; rel=\"next\"","")
 
-                nextPage = nextLink.split("page=")[1].toInt()
+                require(links.isNotEmpty()) { "lisks is empty" }
+
+                nextPage = links.split(",")[1]
+                    .replace(" <","")
+                    .replace(">; rel=\"next\"","")
+                    .split("page=")[1]
+                    .toInt()
+
                 val body = it.body()?: emptyList()
-                Log.d("test", "nextPage = $nextPage")
-                Log.d("test", "it.body()?: emptyList() = ${body}")
-
                 callback.onResult(body, 1, nextPage)
             },{
                 it.printStackTrace()
@@ -41,9 +43,16 @@ class PhotoDataSource(private val api:API, private val compositeDisposable: Comp
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 val links = it.headers().get("link")?:""
-                val nextLink = links.split(",")[3].replace(" <","").replace(">; rel=\"next\"","")
 
-                nextPage = nextLink.split("page=")[1].toInt()
+                require(links.isNotEmpty()) { "lisks is empty" }
+
+                nextPage = links
+                    .split(",")[3]
+                    .replace(" <","")
+                    .replace(">; rel=\"next\"","")
+                    .split("page=")[1]
+                    .toInt()
+
                 callback.onResult(it.body()?: emptyList(),  nextPage)
             },{
                 it.printStackTrace()
