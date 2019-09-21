@@ -44,7 +44,6 @@ class MainActivity : BaseActivity() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe{
-                Log.d("test" , "$it")
                 (recycler_image_list.adapter as PhotoPageAdepter).submitList(it)
         }.let { addDisposable(it) }
 
