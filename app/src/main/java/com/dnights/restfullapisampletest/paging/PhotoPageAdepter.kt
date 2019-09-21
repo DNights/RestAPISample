@@ -1,8 +1,12 @@
 package com.dnights.restfullapisampletest.paging
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -38,6 +42,12 @@ class PhotoPageAdepter(): PagedListAdapter<PhotoData, PhotoPageAdepter.BaseViewH
 
     class ItemViewHolder(itemView: View) : BaseViewHolder(itemView) {
         fun onBind(data: PhotoData){
+            val textID = itemView.findViewById<TextView>(R.id.textView_id)
+            val linearItem = itemView.findViewById<LinearLayout>(R.id.linear_item)
+
+            textID.text = data.id
+            linearItem.setBackgroundColor(Color.parseColor(data.color))
+
             Glide
                 .with(itemView)
                 .load(data.urls.thumb)
