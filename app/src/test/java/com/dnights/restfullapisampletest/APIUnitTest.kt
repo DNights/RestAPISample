@@ -17,11 +17,13 @@ class APIUnitTest {
     fun apiTest() {
         RetrofitAdapter.getInstance(Urls.getBaseUrl())
             .create(API::class.java)
-            .fetchPhotos(AccessKey.accessKey)
+            .fetchPhotos(AccessKey.accessKey, 1)
             .subscribeOn(TrampolineSchedulerProvider().io())
             .observeOn(TrampolineSchedulerProvider().ui())
-            .subscribe({list ->
-                list.map { data ->
+            .subscribe({response ->
+                println(response.headers())
+                val list = response.body()?: emptyList()
+                list.map {data ->
                     println(data.toString())
                 }
             },{
