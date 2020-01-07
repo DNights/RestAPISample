@@ -9,7 +9,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Response
 
-class PhotoDataSource(private val api:API, private val compositeDisposable: CompositeDisposable) : PageKeyedDataSource<Int, PhotoData>(){
+class PhotoDataSource(private val api: API, private val compositeDisposable: CompositeDisposable) :
+    PageKeyedDataSource<Int, PhotoData>() {
 
     override fun loadInitial(
         params: LoadInitialParams<Int>,
@@ -20,9 +21,9 @@ class PhotoDataSource(private val api:API, private val compositeDisposable: Comp
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 val nextPage = getNextPage(it)
-                val body = it.body()?: emptyList()
+                val body = it.body() ?: emptyList()
                 callback.onResult(body, 0, nextPage)
-            },{
+            }, {
                 //TODO "exception loadInitial"
                 it.printStackTrace()
             }).let { compositeDisposable.add(it) }
@@ -35,9 +36,9 @@ class PhotoDataSource(private val api:API, private val compositeDisposable: Comp
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 val nextPage = getNextPage(it)
-                val body = it.body()?: emptyList()
+                val body = it.body() ?: emptyList()
                 callback.onResult(body, nextPage)
-            },{
+            }, {
                 //TODO "exception loadAfter"
                 it.printStackTrace()
             }).let { compositeDisposable.add(it) }
@@ -70,8 +71,5 @@ class PhotoDataSource(private val api:API, private val compositeDisposable: Comp
             .toInt()
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, PhotoData>) {
-
-    }
-
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, PhotoData>) {}
 }
