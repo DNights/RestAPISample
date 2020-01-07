@@ -38,23 +38,3 @@ class APIUnitTest {
         compositeDisposable.clear()
     }
 }
-
-interface BaseSchedulerProvider {
-    fun computation(): Scheduler
-    fun io(): Scheduler
-    fun ui(): Scheduler
-}
-
-class TrampolineSchedulerProvider : BaseSchedulerProvider {
-    override fun computation(): Scheduler {
-        return Schedulers.trampoline()
-    }
-
-    override fun io(): Scheduler {
-        return Schedulers.trampoline()
-    }
-
-    override fun ui(): Scheduler {
-        return Schedulers.trampoline()
-    }
-}
