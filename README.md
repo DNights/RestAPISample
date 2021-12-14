@@ -1,6 +1,7 @@
 # RestAPISample
 
 - https://dnight.tistory.com/entry/RecyclerView-Header-Footer-%EC%83%9D%EC%84%B1
+- https://dnight.tistory.com/entry/Android-Paging-Library
 
 ## Used API
 unsplash (https://unsplash.com/developers)
